@@ -1,0 +1,16 @@
+Installation Instructions
+Jan. 27, 2013
+
+1. Move/copy the .svg icon into /usr/share/icons/hicolor/scalable/actions
+$ sudo cp purse-thief.svg /usr/share/icons/hicolor/scalable/actions
+
+2. Regenerate the GTK icon cahce by running:
+$ sudo gtk-update-icon-cache /usr/share/icons/hicolor/
+
+3. Install mpg321 (or globally substitute your preferred CLI mp3 player in alarm.py, if it responds to -q for quiet and -g for gain.)
+$sudo apt-get install mpg321
+
+4. Ensure you have the tp_smapi module installed and loaded.
+
+5.. Now start the applet, or add this to be run on startup:
+$ python alarm.py
