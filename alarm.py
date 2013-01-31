@@ -135,12 +135,13 @@ class ThinkHDAPSApplet:
     #         #change icon to unarmed status
 
     def _within_alarm_threshold(self):
-        #TODO: rename self.initial_y and self.initial_x to inital_x and initial_y
+        x, y = self._get_position()
         x_okay = x > self.initial_x - THRESHOLD_ALARM and x < self.initial_x + THRESHOLD_ALARM
         y_okay = y > self.initial_y - THRESHOLD_ALARM and y < self.initial_y + THRESHOLD_ALARM
         return x_okay and y_okay
 
     def _within_alert_threshold(self):
+        x, y = self._get_position()
         x_okay = x > self.initial_x - THRESHOLD_ALERT and x < self.initial_x + THRESHOLD_ALERT
         y_okay = y > self.initial_y - THRESHOLD_ALERT and y < self.initial_y + THRESHOLD_ALERT
         return x_okay and y_okay
@@ -151,7 +152,7 @@ class ThinkHDAPSApplet:
         gain_diff = int((diff*100.0) / (THRESHOLD_ALERT))*2
         print "alert",gain_diff
         cmd = SOUND_ALERT + " -g " + `gain_diff`
-        print cmd    
+        print cmd
         os.system(cmd)
 
     def _sound_the_alarm(self):
@@ -168,8 +169,8 @@ class ThinkHDAPSApplet:
         self.initial_x, self.initial_y = self._get_position()
         print self.initial_x
         print self.initial_y
-        self.x = self.initial_x
-        self.y = self.initial_y
+        x = self.initial_x
+        y = self.initial_y
 
         #go into screensaver mode
         os.system("gnome-screensaver-command -l")
@@ -178,17 +179,16 @@ class ThinkHDAPSApplet:
         #self._change_icon_status(True)
 
 
-        while self._within_alarm_threshold:
+        while self._within_alarm_threshold():
             time.sleep(0.05)
 
             # Read HDAPS values
-            x, y = self._get_position()
-
-            if not self._within_alert_threshold:
+            if not self._within_alert_threshold():
+                x, y = self._get_position()
                 self._sound_the_alert(x, y)
 
             #if the user has unlcoked the computer, thus disarming the alarm.
-            if self._computer_unlocked:
+            if self._computer_unlocked():
                 print "Unlocked -> disarmed"
                 return #disarm, but don't quit the program
 
@@ -196,8 +196,8 @@ class ThinkHDAPSApplet:
         # time to start the alarm!
         while 1:
             #stop the alarm when the correct password is entered.
-            if self._computer_unlocked:
-                print "Unlocked -> disarmed"
+            if self._computer_unlocked():
+                print "Unlocked -> disarmed (after alarm activated)"
                 return  #disarm, but don't quit the program
 
             print "Alarm!"
